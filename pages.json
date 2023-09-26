@@ -1,12 +1,91 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
+			"path": "pages/mine/login/login",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
 			}
+		
+		},{
+			"path": "pages/community/community/community",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		
+		}, {
+			"path": "pages/mine/mine/mine",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom",
+				"app-plus":{
+					// 将回弹属性关掉
+					"bounce":"none"
+				}
+			}
+
+		}, {
+			"path": "pages/mine/register/register",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/map/map/map",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/community/detail/detail",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+
 		}
-	],
+	    ,{
+            "path" : "pages/notice/notice/notice",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+								"navigationStyle": "custom"
+            }
+            
+        }
+    ],
+	"tabBar": {
+		"height": "70px",
+		"iconWidth": "22px",
+		"list": [{
+			"pagePath": "pages/community/community/community", // 页面路径，必须在 pages 中先定义
+			"iconPath": "static/community/home.png", // 图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px
+			"selectedIconPath": "static/community/home-active.png" // 选中时的图片路径
+		}, {
+			"pagePath": "pages/map/map/map",
+			"iconPath": "static/map/map.png",
+			"selectedIconPath": "static/map/map-active.png"
+		},
+		{
+			"pagePath": "pages/notice/notice/notice",
+			"iconPath": "static/notice/notice.png",
+			"selectedIconPath": "static/notice/notice-active.png"
+		},
+		{
+			"pagePath": "pages/mine/mine/mine",
+			"iconPath": "static/mine/mine.png",
+			"selectedIconPath": "static/mine/mine-active.png"
+		}
+		]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
