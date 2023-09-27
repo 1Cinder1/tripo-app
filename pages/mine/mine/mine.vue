@@ -15,10 +15,11 @@
 		<view style="margin-left: 36rpx;font-size: 60rpx;font-weight: 600;margin-top: 80rpx;">
 			My Blogs
 		</view>
-		<view class="main" style="margin-top: 20rpx;">
+		<view class="main" style="margin-top: 20rpx;" @click="gotoCreate">
 			<view style="box-sizing: border-box;">
-				<image src="../../../static/mine/camera.png"  style="width: 172rpx;height: 160rpx;z-index: 99;"></image>
+				<image src="../../../static/mine/camera.png"  style="width: 172rpx;height: 160rpx;margin-left: 72rpx;"></image>
 			</view>
+			<text style="margin-left: 56rpx;font-size: 36rpx;font-weight: 600;">Create a new blog</text>
 		</view>
 		<view class="main" style="margin-top: 20rpx;">
 			<view style="box-sizing: border-box;">
@@ -51,6 +52,11 @@
 			back(){
 				uni.navigateBack({
 					delta:1
+				})
+			},
+			gotoCreate(){
+				uni.navigateTo({
+					url:"../../community/publish/publish"
 				})
 			}
 		}

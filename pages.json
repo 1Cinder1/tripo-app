@@ -61,6 +61,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/community/publish/publish",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+								"navigationStyle": "custom"
+            }
+        }
     ],
 	"tabBar": {
 		"height": "70px",

@@ -69,7 +69,7 @@
 		justify-content: center;
 		align-items: center;
 		border-radius: 40rpx;
-		margin-top: 54rpx;
+		margin-top: 70rpx;
 		margin-left: 46rpx;
 	}
 
