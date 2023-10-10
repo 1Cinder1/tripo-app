@@ -5,7 +5,7 @@
 		<view style="display: flex;flex-direction: row;">
 			<image src="../../../static/community/location.png"
 				style="width: 24rpx;height: 28rpx;margin-left: 46rpx;margin-top: 6rpx;"></image>
-			<view style="margin-left: 10rpx;font-weight: 600;font-size: 32rpx;">Wuhan</view>
+			<view style="margin-left: 10rpx;font-weight: 600;font-size: 32rpx;">{{location}}</view>
 		</view>
 		<view class="main" @click="gotoDetail">
 			<view style="box-sizing: border-box;">
@@ -29,18 +29,38 @@
 </template>
 
 <script>
+	import api from "../../../api/api.js"
 	export default {
 		data() {
 			return {
-
+				location:""
 			}
 		},
+		onLoad() {
+			let that = this
+			this.baiduMap.getlocation().then(res =>{
+				that.location = res.address.city
+			})
+			this.getBasicInfo()
+		},
 		methods: {
+			getPostInfo() {
+				api.getPostInfo()
+			},
 			gotoDetail(){
 				uni.navigateTo({
 					url:"../detail/detail"
 				})
-			}
+			},
+			async getBasicInfo() {
+				let that = this
+				api.getUserInfo(null,true).then(res => {
+					uni.setStorage({
+						key:"userInfo",
+						data:res.data,
+					})
+				})
+			},
 		}
 	}
 </script>

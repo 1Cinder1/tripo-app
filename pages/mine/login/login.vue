@@ -29,13 +29,13 @@
 </template>
 
 <script>
+	import api from "../../../api/api.js";
 	export default {
 		data() {
 			return {
 				showPassword:true,
 				password: "",
 				email:""
-				
 			}
 		},
 		methods: {
@@ -47,7 +47,7 @@
 					})
 					return
 				}
-				const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+				const regEmail = /^([a-zA-Z\.0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
 				if(!regEmail.test(this.email)) {
 					uni.showToast({
 						icon:"none",
@@ -55,8 +55,18 @@
 					})
 					return
 				}
-				uni.switchTab({
-					url:"../../community/community/community"
+				api.getToken(this.email,this.password).then(res => {
+					uni.setStorage({
+						key:"access_token",
+						data:res.data.access,
+					})
+					uni.setStorage({
+						key:"refresh_token",
+						data:res.data.refresh
+					})
+					uni.switchTab({
+						url:"../../community/community/community"
+					})
 				})
 			},
 			gotoRegister(){

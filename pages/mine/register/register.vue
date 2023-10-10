@@ -29,6 +29,7 @@
 </template>
 
 <script>
+	import api from "../../../api/api.js";
 	export default {
 		data() {
 			return {
@@ -72,7 +73,7 @@
 					})
 					return
 				}
-				const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
+				const regEmail = /^([a-zA-Z\.0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/
 				if (!regEmail.test(this.email)) {
 					uni.showToast({
 						icon: "none",
@@ -80,12 +81,34 @@
 					})
 					return
 				}
-				uni.navigateBack({
-					delta: 1
+				api.register(this.email,this.verificationCode,this.username,this.password).then(res =>{
+					console.log(res)
+					if(res.statusCode == '200') {
+						uni.showToast({
+							icon:"success",
+							title:"the emai has been registered successfully"
+						})
+						uni.navigateBack({
+							delta: 1
+						})
+					}
+					if(res.statusCode == '301') {
+						uni.showToast({
+							icon:"none",
+							title:"the email had been registered"
+						})
+					}
 				})
 			},
 			getCode() {
 				if (!this.getCodeFlag) {
+					return
+				}
+				if(this.email == "") {
+					uni.showToast({
+						icon:"none",
+						title:"email could not be empty"
+					})
 					return
 				}
 				this.getCodeFlag = false
@@ -94,13 +117,19 @@
 				var timer = setInterval(() => {
 					this.codeTxt = 'Get Code'
 					if (time == 1) {
-						this.codeFlag = true;
+						this.getCodeFlag = true;
 						clearInterval(timer)
 					} else {
 						time--
 						this.codeTxt = 'Reacquire  ' + time + 's'
 					}
 				}, 1000)
+				api.getVerification(this.email).then(res =>{
+					uni.showToast({
+						icon:"none",
+						title:"send success"
+					})
+				})
 			}
 		}
 	}

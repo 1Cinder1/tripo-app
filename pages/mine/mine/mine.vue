@@ -5,10 +5,10 @@
 		</view>
 		<view style="display: flex;flex-direction: column;justify-content: center;align-items: center;margin-top: 80rpx;">
 			<view>
-				<image src="../../../static/community/avatar.jpg" style="width: 200rpx;border-radius: 50%;" mode="widthFix"></image>
+				<image :src="userInfo.avatar" style="width: 200rpx;border-radius: 50%;" mode="widthFix"></image>
 			</view>
 			<view style="font-size: 48rpx;font-weight: 600;margin-top: 48rpx;">
-				Cinder
+				{{userInfo.username}}
 				<image src="../../../static/mine/edit.png" style="width: 48rpx;margin-left: 16rpx;vertical-align: middle;" mode="widthFix"></image>
 			</view>
 		</view>
@@ -42,13 +42,25 @@
 </template>
 
 <script>
+	import api from "../../../api/api.js";
 	export default {
 		data() {
 			return {
-				
+				userInfo:{},
+				defaultImage: "../../../static/defaultAvatar.png"
 			}
 		},
+		onLoad() {
+			this.userInfo= uni.getStorageSync("userInfo")
+		},
 		methods: {
+		 // 	async getBasicInfo() {
+			// 	let that = this
+			// 	api.getUserInfo(null,true).then(res => {
+			// 		console.log(res)
+			// 		that.userInfo = res.data
+			// 	})
+			// },
 			back(){
 				uni.navigateBack({
 					delta:1
