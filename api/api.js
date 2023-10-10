@@ -32,8 +32,10 @@ function getUserInfo(uid,needToken) {
 function modifyPostInfo(data={}) {
 	return request.tokenRequestByPost(`/set_post_info/`,data)
 }
-function pushPostInfo(data={}) {
-	return request.tokenRequestByPost(`/push_post_info/`,data)
+function pushPostInfo(uid,title,content,location,time) {
+	return request.tokenRequestByPost(`/push_post_info/`,{
+		uid,title,content,location,time
+	})
 }
 function getPostInfo(data={}) {
 	return request.requestByGet(`/get_post_info/`,data)
@@ -50,6 +52,14 @@ function pushImg(data={}) {
 function deleteImg(data={}) {
 	return request.tokenRequestByDelete(`/delete_img/`,data)
 }
+function setUserInfo(username) {
+	return request.tokenRequestByPost(`/set_user_info/`,{
+		username
+	})
+}
+function uploadAvatar(tempFilePaths) {
+	return request.uploadFile(`/upload_avatar/`,tempFilePaths,'avatar')
+}
 
 export default {
 	getVerification,
@@ -64,5 +74,7 @@ export default {
 	deletePostInfo,
 	getChatResponse,
 	pushImg,
-	deleteImg
+	deleteImg,
+	setUserInfo,
+	uploadAvatar
 }

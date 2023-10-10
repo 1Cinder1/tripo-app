@@ -56,17 +56,24 @@
 					return
 				}
 				api.getToken(this.email,this.password).then(res => {
-					uni.setStorage({
-						key:"access_token",
-						data:res.data.access,
-					})
-					uni.setStorage({
-						key:"refresh_token",
-						data:res.data.refresh
-					})
-					uni.switchTab({
-						url:"../../community/community/community"
-					})
+					if(res.statusCode == '200') {
+						uni.setStorage({
+							key:"access_token",
+							data:res.data.access,
+						})
+						uni.setStorage({
+							key:"refresh_token",
+							data:res.data.refresh
+						})
+						uni.switchTab({
+							url:"../../community/community/community"
+						})
+					}else {
+						uni.showToast({
+							icon:"none",
+							title:res.data.detail
+						})
+					}
 				})
 			},
 			gotoRegister(){

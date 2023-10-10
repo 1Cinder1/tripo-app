@@ -5,13 +5,7 @@ let BASE_URL=ALL_URL.PRO;
 function tokenRequestByGet(path,data = {}) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
-		uni.showToast({
-			icon:"none",
-			title:"请先登录"
-		})
-		uni.navigateTo({
-			url:"/pages/mine/login/login.vue"
-		})
+		logout()
 		return
 	}
 	return new Promise((resolve, reject)=>{
@@ -26,6 +20,13 @@ function tokenRequestByGet(path,data = {}) {
 				let res = {}
 				res.data = response.data
 				res.statusCode = response.statusCode
+				let flag = vaildTokenExpired(response)
+				if(flag == 'reRequest') {
+					tokenRequestByGet(path,data)
+					return
+				}else if(flag == 'logout') {
+					return
+				}
 				resolve(res)
 			},
 			fail(err) {
@@ -45,13 +46,7 @@ function tokenRequestByGet(path,data = {}) {
 function tokenRequestByDelete(path,data = {}) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
-		uni.showToast({
-			icon:"none",
-			title:"请先登录"
-		})
-		uni.navigateTo({
-			url:"/pages/mine/login/login.vue"
-		})
+		logout()
 		return
 	}
 	return new Promise((resolve, reject)=>{
@@ -60,12 +55,19 @@ function tokenRequestByDelete(path,data = {}) {
 			method: 'DELETE',
 			data,
 			header: {
-				"AUTHORIZATION": 'bearer ' + token
+				"AUTHORIZATION": 'Bearer ' + token
 			},
 			success(response) {
 				let res = {}
 				res.data = response.data
 				res.statusCode = response.statusCode
+				let flag = vaildTokenExpired(response)
+				if(flag == 'reRequest') {
+					tokenRequestByDelete(path,data)
+					return
+				}else if(flag == 'logout') {
+					return
+				}
 				resolve(res)
 			},
 			fail(err) {
@@ -85,13 +87,7 @@ function tokenRequestByDelete(path,data = {}) {
 function tokenRequestByPost(path,data = {}) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
-		uni.showToast({
-			icon:"none",
-			title:"请先登录"
-		})
-		uni.navigateTo({
-			url:"/pages/mine/login/login.vue"
-		})
+		logout()
 		return
 	}
 	return new Promise((resolve, reject)=>{
@@ -100,12 +96,21 @@ function tokenRequestByPost(path,data = {}) {
 			method: 'POST',
 			data,
 			header: {
-				"AUTHORIZATION": 'bearer ' + token
+				"AUTHORIZATION": 'Bearer ' + token
 			},
 			success(response) {
+				
 				let res = {}
 				res.data = response.data
 				res.statusCode = response.statusCode
+				
+				let flag = vaildTokenExpired(response)
+				if(flag == 'reRequest') {
+					tokenRequestByPost(path,data)
+					return
+				}else if(flag == 'logout') {
+					return
+				}
 				resolve(res)
 			},
 			fail(err) {
@@ -176,11 +181,85 @@ function requestByPost(path,data = {}) {
 		});
 	})
 };
+function uploadFile(path,tempFilePaths,name) {
+	const token = uni.getStorageSync("access_token");
+	if(token == '' || token == null) {
+		logout()
+		return
+	}
+	return new Promise((resolve, reject)=>{
+		uni.uploadFile({
+			url:BASE_URL + path,
+			filePath: tempFilePaths,
+			name: name,
+			header: {
+				"AUTHORIZATION": 'Bearer ' + token
+			},
+			success(response) {
+				let res = {}
+				res.data = response.data
+				res.statusCode = response.statusCode
+				
+				let flag = vaildTokenExpired(response)
+				if(flag == 'reRequest') {
+					tokenRequestByPost(path,data)
+					return
+				}else if(flag == 'logout') {
+					return
+				}
+				resolve(res)
+			},
+			fail(err) {
+				reject(err)
+			}
+		})
+	})
+};
+function logout() {
+	uni.showToast({
+		icon:"none",
+		title:"login please"
+	})
+	uni.reLaunch({
+		url:"/pages/mine/login/login.vue"
+	})
+}
+function vaildTokenExpired(response) {
+	if(response.statusCode == '401' && response.data.code =='token_not_valid') {
+		let refresh = uni.getStorageSync("refresh_token")
+		if(refresh == '') {
+			logout()
+		}
+		let data = {}
+		data.refresh = refresh
+		requestByPost(`/api/refresh/`,data).then(res =>{
+			if(res.statusCode == '200') {
+				uni.setStorage({
+					key:"access_token",
+					data:res.data.access,
+				})
+				uni.setStorage({
+					key:"refresh_token",
+					data:res.data.refresh
+				})
+				return 'reRequest'
+			}else {
+				logout()
+				return 'logout'
+			}
+		})
+		return 'logout'
+	}else {
+		return 'next'
+	}
+}
 
 export default {
 	tokenRequestByGet,
 	tokenRequestByPost,
 	requestByGet,
 	requestByPost,
-	tokenRequestByDelete
+	tokenRequestByDelete,
+	uploadFile,
+	BASE_URL
 }

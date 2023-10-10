@@ -51,6 +51,7 @@
 </template>
 
 <script>
+	import api from "../../../api/api.js";
 	export default {
 		data() {
 			const currentDate = this.getDate({
@@ -62,7 +63,8 @@
 				time: currentTime,
 				content:"",
 				title:"",
-				placeName:""
+				placeName:"",
+				userInfo:{}
 			}
 		},
 		computed: {
@@ -104,7 +106,10 @@
 
 			},
 			post() {
-				
+				this.userInfo = uni.getStorageSync("userInfo")
+				api.pushPostInfo(this.userInfo.uid,this.title,this.content,this.placeName,this.time).then(res=>{
+					
+				})
 			}
 		}
 	}

@@ -30,6 +30,7 @@
 
 <script>
 	import api from "../../../api/api.js"
+	import request from "../../../utils/request/request.js"
 	export default {
 		data() {
 			return {
@@ -55,6 +56,8 @@
 			async getBasicInfo() {
 				let that = this
 				api.getUserInfo(null,true).then(res => {
+					res.data.avatar = request.BASE_URL + res.data.avatar
+					console.log(res)
 					uni.setStorage({
 						key:"userInfo",
 						data:res.data,
