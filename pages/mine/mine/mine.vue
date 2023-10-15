@@ -4,10 +4,10 @@
 			style="height: 120rpx;display: flex;flex-direction: row;align-items: center;justify-content: center;margin-top: 50rpx;">
 			<view style="font-size: 32rpx;font-weight: 700;">My Profile</view>
 		</view>
-		<view
-			style="display: flex;flex-direction: column;justify-content: center;align-items: center;margin-top: 80rpx;">
+		<view class="avatar" v-if="Object.keys(userInfo).length != 0">
 			<view>
-				<image :src="userInfo.avatar" style="width: 200rpx;border-radius: 50%;height: 200rpx;" @longtap="chooseImage"></image>
+				<image :src="userInfo.avatar" style="width: 200rpx;border-radius: 50%;height: 200rpx;"
+					@longtap="chooseImage"></image>
 			</view>
 			<view style="font-size: 48rpx;font-weight: 600;margin-top: 48rpx;">
 				{{userInfo.username}}
@@ -16,9 +16,17 @@
 				</image>
 			</view>
 			<uni-popup ref="popup" type="dialog">
-				<uni-popup-dialog mode="input" message="成功消息" :value="userInfo.username" :duration="2000" :before-close="true" @close="close"
-					@confirm="confirm"></uni-popup-dialog>
+				<uni-popup-dialog mode="input" message="成功消息" :value="userInfo.username" :duration="2000"
+					:before-close="true" @close="close" @confirm="confirm"></uni-popup-dialog>
 			</uni-popup>
+		</view>
+		<view v-else class="avatar">
+			<view>
+				<image src="../../../static/mine/default.jpg" style="width: 200rpx;border-radius: 50%;height: 200rpx;margin-left: 40rpx;" @click="gotoLogin"></image>
+				<view style="font-size: 48rpx;font-weight: 600;margin-top: 48rpx;">
+						login please
+				</view>
+			</view>
 		</view>
 		<view style="margin-left: 36rpx;font-size: 60rpx;font-weight: 600;margin-top: 80rpx;">
 			My Blogs
@@ -30,24 +38,36 @@
 			</view>
 			<text style="margin-left: 56rpx;font-size: 36rpx;font-weight: 600;">Create a new blog</text>
 		</view>
-		<view class="main" style="margin-top: 20rpx;">
-			<view style="box-sizing: border-box;">
-				<image src="../../../static/community/logo.png"
-					style="width: 282rpx; height: 180rpx;border-radius: 30rpx;vertical-align: middle;"></image>
-			</view>
-			<view style="margin-left: 20rpx;">
-				<view style="font-weight: 600;font-size: 36rpx;">Lake Trip</view>
-				<view style="margin-top: 14rpx;">
-					<image src="../../../static/community/location.png" style="width: 24rpx;height: 28rpx;"></image>
-					<text style="margin-left: 16rpx;color: #636363;font-size: 24rpx;">Location</text>
+		<uni-swipe-action>
+			<uni-swipe-action-item v-for="(item,index) in post" :key="index">
+				<view class="main" style="margin-top: 20rpx;">
+					<view style="box-sizing: border-box;">
+						<image :src="baseUrl +item.images[0]"
+							style="width: 282rpx; height: 180rpx;border-radius: 30rpx;vertical-align: middle;"></image>
+					</view>
+					<view style="margin-left: 20rpx;width: 250rpx;">
+						<view style="font-weight: 600;font-size: 36rpx;">{{item.title}}</view>
+						<view style="margin-top: 14rpx;">
+							<image src="../../../static/community/location.png" style="width: 24rpx;height: 28rpx;">
+							</image>
+							<text style="margin-left: 16rpx;color: #636363;font-size: 24rpx;">{{item.location}}</text>
+						</view>
+						<view style="margin-top: 14rpx; color: #636363;font-size: 24rpx;">{{item.time.split('T')[0]}}
+						</view>
+					</view>
+					<view>
+						<image src="../../../static/mine/gpt.png" style="width: 64rpx;height: 64rpx;">
+						</image>
+					</view>
 				</view>
-				<view style="margin-top: 14rpx; color: #636363;font-size: 24rpx;">2022/12/02</view>
-			</view>
-			<view>
-				<image src="../../../static/mine/gpt.png" mode="widthFix" style="width: 64rpx;margin-left: 96rpx;">
-				</image>
-			</view>
-		</view>
+				<template v-slot:right>
+					<view class="delete" @click="deletePost(item)">
+						delete
+					</view>
+				</template>
+			</uni-swipe-action-item>
+		</uni-swipe-action>
+		<view style="height: 50rpx;"></view>
 	</view>
 </template>
 
@@ -58,11 +78,42 @@
 		data() {
 			return {
 				userInfo: {},
-				defaultImage: "../../../static/defaultAvatar.png"
+				up: 0,
+				down: 10,
+				baseUrl: request.BASE_URL,
+				post: [],
+				hasMore: true
 			}
 		},
-		onLoad() {
+		async onLoad() {
 			this.userInfo = uni.getStorageSync("userInfo")
+		},
+		async onShow() {
+			await this.getPostList()
+		},
+		onPullDownRefresh() {
+			this.post = []
+			this.down = 10
+			this.userInfo = {}
+			this.getPostList()
+			this.getBasicInfo()
+			setTimeout(function() {
+				uni.stopPullDownRefresh(); //停止下拉刷新动画
+			}, 500);
+		},
+		onReachBottom() {
+			if (this.hasMore) {
+				this.down += 10
+				uni.showLoading({
+					title: "loading more"
+				})
+				this.getPostList()
+			} else {
+				uni.showToast({
+					icon: "none",
+					title: "Already shown all"
+				})
+			}
 		},
 		methods: {
 			back() {
@@ -70,37 +121,81 @@
 					delta: 1
 				})
 			},
+			gotoLogin() {
+				if(Object.keys(this.userInfo).length == 0) {
+					uni.navigateTo({
+						url:"../login/login"
+					})
+				}
+			},
+			deletePost(item) {
+				let that = this
+				api.deletePost(item.post_id).then(res => {
+					if (res.statusCode == '200') {
+						uni.showToast({
+							icon: "success",
+							title: "delete success"
+						})
+					} else {
+						uni.showToast({
+							icon: "error",
+							title: "delete error"
+						})
+					}
+					that.getPostList()
+				})
+			},
 			chooseImage() {
 				let that = this
 				uni.chooseImage({
-					count:1,
-					sizeType:['original'],
-					sourceType:['album'],
+					count: 1,
+					sizeType: ['compressed'],
+					sourceType: ['album'],
 					success: (res) => {
-						api.uploadAvatar(res.tempFilePaths[0]).then(response=>{
+						console.log(res)
+						api.uploadAvatar(res.tempFilePaths[0]).then(response => {
 							uni.showToast({
-								icon:"none",
-								title:"upload avatar success"
+								icon: "none",
+								title: "upload avatar success"
 							})
 							that.getBasicInfo()
 						})
 					}
 				})
 			},
+			getPostList() {
+				let that = this
+				api.getPostList(this.userInfo.uid, this.up, this.down).then(res => {
+					if (res.statusCode == '200') {
+						if (res.data.posts.length <= that.post.length) {
+							that.hasMore = false
+						}
+						that.post = res.data.posts
+
+					}
+				})
+			},
 			async getBasicInfo() {
 				let that = this
-				api.getUserInfo(null,true).then(res => {
+				api.getUserInfo(null, true).then(res => {
 					res.data.avatar = request.BASE_URL + res.data.avatar
 					console.log(res.data)
 					uni.setStorage({
-						key:"userInfo",
-						data:res.data,
+						key: "userInfo",
+						data: res.data,
 					})
 					that.userInfo = res.data
 				})
 				this.$forceUpdate()
 			},
 			gotoCreate() {
+				if (this.userInfo.uid == '') {
+					uni.showToast({
+						icon: "none",
+						title: "login please"
+					})
+					return
+				}
 				uni.navigateTo({
 					url: "../../community/publish/publish"
 				})
@@ -112,7 +207,7 @@
 				this.$refs.popup.close()
 			},
 			confirm(value) {
-				api.setUserInfo(value).then(res=>{
+				api.setUserInfo(value).then(res => {
 					console.log(res)
 				})
 				this.getBasicInfo()
@@ -138,5 +233,24 @@
 		align-items: center;
 		padding: 6rpx;
 		height: 204rpx;
+	}
+
+	.delete {
+		background-color: #E43D33;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		color: #FFFFFF;
+		border-radius: 40rpx 0rpx 0rpx 40rpx;
+		margin-top: 30rpx;
+		width: 150rpx;
+	}
+
+	.avatar {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin-top: 80rpx;
 	}
 </style>

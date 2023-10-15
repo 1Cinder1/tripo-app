@@ -12,6 +12,7 @@
 			<text>Password</text>
 			<input :password="showPassword" v-model="password"/>
 		</view>
+		<text class="reset" @click="gotoReset">Forgot your password? click to reset</text>
 		<view style="display: flex;justify-content: center;" @click="login">
 			<view class="login">
 				Log in
@@ -38,7 +39,15 @@
 				email:""
 			}
 		},
+		onLoad() {
+			uni.clearStorage()
+		},
 		methods: {
+			gotoReset() {
+				uni.navigateTo({
+					url:"../reset/reset"
+				})
+			},
 			login(){
 				if(this.password == "" || this.email == ""){
 					uni.showToast({
@@ -98,6 +107,12 @@
 		font-weight: 900;
 		margin-top: 140rpx;
 	}
+	.reset {
+		font-family: Inter;
+		font-size: 26rpx;
+		font-weight: 400;
+		margin-left: 72rpx;
+	}
 	.icon {
 		align-items: center;
 		display: flex;
@@ -123,7 +138,7 @@
 		height: 52rpx;
 		line-height: 52rpx;
 		margin-top: 20rpx;
-		margin-bottom: 76rpx;
+		margin-bottom: 22rpx;
 		display: flex;
 		justify-content: center;
 		align-items: center;

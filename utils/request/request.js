@@ -84,22 +84,21 @@ function tokenRequestByDelete(path,data = {}) {
 		});
 	})
 };
-function tokenRequestByPost(path,data = {}) {
+function tokenRequestByPost(path,data = {},header={}) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
 		logout()
 		return
 	}
+	header.AUTHORIZATION = 'Bearer ' + token
+	console.log(token)
 	return new Promise((resolve, reject)=>{
 		uni.request({
 			url: BASE_URL + path,
 			method: 'POST',
 			data,
-			header: {
-				"AUTHORIZATION": 'Bearer ' + token
-			},
+			header: header,
 			success(response) {
-				
 				let res = {}
 				res.data = response.data
 				res.statusCode = response.statusCode
@@ -181,7 +180,7 @@ function requestByPost(path,data = {}) {
 		});
 	})
 };
-function uploadFile(path,tempFilePaths,name) {
+function uploadFile(path,tempFilePaths,name,data={}) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
 		logout()
@@ -195,6 +194,7 @@ function uploadFile(path,tempFilePaths,name) {
 			header: {
 				"AUTHORIZATION": 'Bearer ' + token
 			},
+			formData: data,
 			success(response) {
 				let res = {}
 				res.data = response.data
@@ -210,6 +210,7 @@ function uploadFile(path,tempFilePaths,name) {
 				resolve(res)
 			},
 			fail(err) {
+				console.log(err)
 				reject(err)
 			}
 		})
@@ -242,6 +243,7 @@ function vaildTokenExpired(response) {
 					key:"refresh_token",
 					data:res.data.refresh
 				})
+				console.log('reRequest')
 				return 'reRequest'
 			}else {
 				logout()

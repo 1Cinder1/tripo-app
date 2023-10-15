@@ -11,9 +11,6 @@ function register(email,code,username,password) {
 		password
 	})
 }
-function reset(data={}) {
-	return request.requestByPost(`/reset/`,data)
-}
 function getToken(username,password) {
 	return request.requestByPost(`/api/token/`,{
 		username,password
@@ -32,16 +29,21 @@ function getUserInfo(uid,needToken) {
 function modifyPostInfo(data={}) {
 	return request.tokenRequestByPost(`/set_post_info/`,data)
 }
-function pushPostInfo(uid,title,content,location,time) {
-	return request.tokenRequestByPost(`/push_post_info/`,{
-		uid,title,content,location,time
+function pushPostInfo(title,content,location) {
+	return request.tokenRequestByPost(`/publish/`,{
+		title,content,location
+	},{
+		"Content-Type": 'application/x-www-form-urlencoded'
 	})
 }
-function getPostInfo(data={}) {
-	return request.requestByGet(`/get_post_info/`,data)
+function uploadPostImage(postId,images) {
+	return request.uploadFile(`/upload_images/?post_id=${postId}`,images,'images')
 }
-function deletePostInfo(data={}) {
-	return request.tokenRequestByDelete(`/delete_post_info/`,data)
+function getPostInfo(postId) {
+	return request.requestByGet(`/get_post/?post_id=${postId}`,{})
+}
+function deletePost(postId) {
+	return request.tokenRequestByDelete(`/delete_post/?post_id=${postId}`,{})
 }
 function getChatResponse(data={}) {
 	return request.tokenRequestByGet(`/get_chat_response/`,data)
@@ -60,21 +62,31 @@ function setUserInfo(username) {
 function uploadAvatar(tempFilePaths) {
 	return request.uploadFile(`/upload_avatar/`,tempFilePaths,'avatar')
 }
+function getPostList(uid,up,down) {
+	return request.requestByGet(`/post_list/?uid=${uid}&up=${up}&down=${down}`,{});
+}
+function reSet(email,code,password) {
+	return request.requestByPost(`/reset/`,{
+		email,code,password
+	})
+}
 
 export default {
 	getVerification,
 	register,
-	reset,
 	getToken,
 	refreshToken,
 	getUserInfo,
 	modifyPostInfo,
 	pushPostInfo,
 	getPostInfo,
-	deletePostInfo,
+	deletePost,
 	getChatResponse,
 	pushImg,
 	deleteImg,
 	setUserInfo,
-	uploadAvatar
+	uploadAvatar,
+	getPostList,
+	uploadPostImage,
+	reSet
 }

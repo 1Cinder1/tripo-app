@@ -7,16 +7,17 @@
 			}
 		},
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	{
+		"path": "pages/community/community/community",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": true,
+			"navigationStyle": "custom"
+		}
+	
+	},
 		{
 			"path": "pages/mine/login/login",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false,
-				"navigationStyle": "custom"
-			}
-		
-		},{
-			"path": "pages/community/community/community",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": false,
@@ -27,7 +28,7 @@
 			"path": "pages/mine/mine/mine",
 			"style": {
 				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false,
+				"enablePullDownRefresh": true,
 				"navigationStyle": "custom",
 				"app-plus":{
 					// 将回弹属性关掉
@@ -76,6 +77,16 @@
                 "enablePullDownRefresh": false,
 								"navigationStyle": "custom"
             }
+        }
+        ,{
+            "path" : "pages/mine/reset/reset",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false,
+								"navigationStyle": "custom"
+            }
+            
         }
     ],
 	"tabBar": {

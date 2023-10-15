@@ -7,18 +7,13 @@
 		</view>
 		<view>
 			<scroll-view scroll-x="true" @scroll="scroll" class="scroll">
-				<view class="scroll-item">
+				<view v-for="(item,index) in images" class="scroll-item" @click="previewImage(index)">
+					<image :src="item" class="scroll-item-image" style="width: 346rpx;height: 404rpx;"></image>
+				</view>
+<!-- 				<view class="scroll-item">
 					<image src="../../../static/community/avatar.jpg" class="scroll-item-image"
 						style="width: 346rpx;height: 404rpx;"></image>
-				</view>
-				<view class="scroll-item">
-					<image src="../../../static/community/Rectangle.png" class="scroll-item-image"
-						style="width: 346rpx;height: 404rpx;"></image>
-				</view>
-				<view class="scroll-item">
-					<image src="../../../static/community/Rectangle.png" class="scroll-item-image"
-						style="width: 346rpx;height: 404rpx;"></image>
-				</view>
+				</view> -->
 				<view class="scroll-item" @click="addImage">
 					<image src="../../../static/publish/add.jpg"
 						style="width: 88rpx;height: 184rpx;margin-bottom: 128rpx;margin-left: 122rpx"></image>
@@ -64,7 +59,8 @@
 				content:"",
 				title:"",
 				placeName:"",
-				userInfo:{}
+				userInfo:{},
+				images:[]
 			}
 		},
 		computed: {
@@ -84,8 +80,25 @@
 			scroll() {
 
 			},
+			previewImage(index) {
+				let that = this
+				console.log(this.images)
+				uni.previewImage({
+					current:index,
+					urls: that.images
+				})
+			},
 			addImage() {
-
+				let that = this
+				uni.chooseImage({
+					count:9,
+					sizeType:['compressed'],
+					sourceType:['album'],
+					success: (res) => {
+						console.log(res)
+						this.images = res.tempFilePaths
+					}
+				})
 			},
 			getDate(type) {
 				const date = new Date();
@@ -107,8 +120,26 @@
 			},
 			post() {
 				this.userInfo = uni.getStorageSync("userInfo")
-				api.pushPostInfo(this.userInfo.uid,this.title,this.content,this.placeName,this.time).then(res=>{
+				console.log(this.images)
+				let that = this
+				api.pushPostInfo(this.title,this.content,this.placeName).then(res=>{
+					console.log(res)
 					
+					if(res.statusCode == '200') {
+						uni.showToast({
+							icon:"success",
+							title:"publish success"
+						})
+						uni.navigateBack()
+						for(let i=0;i<that.images.length;i++) {
+								that.uploadImages(res.data.post_id,that.images[i])
+						}
+					}
+				})
+			},
+			uploadImages(postId,path) {
+				api.uploadPostImage(postId,path).then(res=>{
+					console.log(res)
 				})
 			}
 		}
@@ -145,6 +176,7 @@
 		width: 346rpx;
 		height: 404rpx;
 		display: inline-block;
+		margin-right: 10rpx;
 	}
 
 	.scroll-item-image {

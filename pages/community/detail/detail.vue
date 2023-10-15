@@ -4,55 +4,70 @@
 			<view class="left" @click="back">
 				<image src="../../../static/left.png" style="width: 50rpx;" mode="widthFix"></image>
 			</view>
-			<view style="margin-top: 54rpx;margin-left: 144rpx;font-size: 32rpx;font-weight: 700;">Lake Trip</view>
+			<view style="margin-top: 54rpx;margin-left: 144rpx;font-size: 32rpx;font-weight: 700;"></view>
 		</view>
-		<view class="main-image-fa">
+<!-- 		<view class="main-image-fa">
 			<image src="../../../static/community/avatar.jpg" mode="widthFix" class="main-image"></image>
-			
-		</view>
+		</view> -->
+		<swiper class="main-image-fa" indicator-dots="true">
+			<swiper-item v-for="(item,index) in detail.images">
+				<image :src="baseUrl + item" mode="widthFix" class="main-image"></image>
+			</swiper-item>
+		</swiper>
 		<view style="display: flex;flex-direction: row;">
-			<view style="margin-left: 46rpx;">
-				<view style="font-size: 40rpx;font-weight: 600;">RedFish Lake</view>
+			<view style="margin-left: 46rpx; width: 256rpx;">
+				<view style="font-size: 40rpx;font-weight: 600;">{{detail.title}}</view>
 				<view style="margin-top: 20rpx;">
 					<image src="../../../static/community/location.png" style="width: 26rpx;vertical-align: middle;"
 						mode="widthFix"></image>
-					<text style="margin-left: 10rpx;">Location</text>
+					<text style="margin-left: 10rpx;">{{detail.location}}</text>
 				</view>
 			</view>
 			<view style="display: flex;flex-direction: row;margin-left: 140rpx;">
-				<view style="max-width: 200rpx;word-wrap:break-word;color: #636363;">Posted by Username 2022/12/02 </view>
-				<image src="../../../static/community/avatar.jpg" style="width: 84rpx;border-radius: 50%;"
+				<view style="max-width: 200rpx;word-wrap:break-word;color: #636363;"> 
+				<text>Posted by {{detail.username}} \n {{detail.time.split('T')[0]}} \n {{detail.time.split('T')[1].split(".")[0]}} </text> 
+				</view>
+				<image :src="baseUrl + detail.avatar" style="width: 84rpx;border-radius: 50%;"
 					mode="widthFix"></image>
 			</view>
 		</view>
 		<view class="dis-text">
-			What is Redfish Lake known for?
-			Redfish Lake is the final stop on the longest
-			Pacific salmon run in North America, which
-			requires long-distance swimmers, such as
-			Sockeye and Chinook Salmon, to travel over
-			900 miles upstream to return to their spawning
-			grounds.
-			Redfish Lake is an alpine lake in Custer County,
-			Idaho, just south of Stanley. It is the largest lake
-			within the Sawtooth National Recreation Area.
+			{{detail.content}}
 		</view>
 	</view>
 </template>
 
 <script>
+	import api from "../../../api/api.js"
+	import request from "../../../utils/request/request.js"
 	export default {
 		data() {
 			return {
-
+				postId:0,
+				detail:{},
+				baseUrl:request.BASE_URL,
 			}
+		},
+		async onLoad(options) {
+			this.postId = options.postId
+			await this.getPostInfo()
+			console.log(this.detail)
 		},
 		methods: {
 			back(){
 				uni.navigateBack({
 					delta:1
 				})
+			},
+			async getPostInfo() {
+				let that = this
+				await api.getPostInfo(this.postId).then(res=>{
+					if(res.statusCode == '200') {
+						that.detail = res.data
+					}
+				})
 			}
+			
 		}
 	}
 </script>
