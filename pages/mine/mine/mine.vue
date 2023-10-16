@@ -42,7 +42,7 @@
 		</view>
 		<uni-swipe-action>
 			<uni-swipe-action-item v-for="(item,index) in post" :key="index">
-				<view class="main" style="margin-top: 20rpx;">
+				<view class="main" style="margin-top: 20rpx;" @click="gotoDetail(item)">
 					<view style="box-sizing: border-box;">
 						<image :src="baseUrl +item.images[0]"
 							style="width: 282rpx; height: 180rpx;border-radius: 30rpx;vertical-align: middle;"></image>
@@ -70,6 +70,7 @@
 				</template>
 			</uni-swipe-action-item>
 		</uni-swipe-action>
+		<view class="logout" @click="logout">logout</view>
 		<view style="height: 50rpx;"></view>
 	</view>
 </template>
@@ -122,6 +123,12 @@
 			back() {
 				uni.navigateBack({
 					delta: 1
+				})
+			},
+			gotoDetail(item){
+				console.log(item)
+				uni.navigateTo({
+					url:`../../community/detail/detail?postId=${item.post_id}`
 				})
 			},
 			gotoLogin() {
@@ -193,7 +200,7 @@
 				this.$forceUpdate()
 			},
 			gotoCreate() {
-				if (this.userInfo.uid == '') {
+				if (Object.keys(this.userInfo).length == 0) {
 					uni.showToast({
 						icon: "none",
 						title: "login please"
@@ -209,6 +216,19 @@
 			},
 			close() {
 				this.$refs.popup.close()
+			},
+			logout() {
+				uni.showModal({
+					content: "want to logout?",
+					success(res) {
+						if(res.confirm) {
+							uni.clearStorage()
+							uni.reLaunch({
+								url:"../login/login"
+							})
+						}
+					}
+				})
 			},
 			async confirm(value) {
 				if(value.length > 12) {
@@ -273,5 +293,19 @@
 		-webkit-line-clamp: 2;
 		overflow: hidden;
 		width: 210rpx;
+	}
+	.logout {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #FFFFFF;
+		font-weight: 700;
+		margin-top: 64rpx;
+		margin-left: 46rpx;
+		background-color: #E43D33;
+		margin-right: 46rpx;
+		border-radius: 40rpx;
+		padding: 6rpx;
+		height: 80rpx;
 	}
 </style>

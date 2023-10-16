@@ -218,12 +218,15 @@ function uploadFile(path,tempFilePaths,name,data={}) {
 	})
 };
 function logout() {
-	uni.showToast({
-		icon:"none",
-		title:"login please"
-	})
-	uni.reLaunch({
-		url:"/pages/mine/login/login.vue"
+	uni.showModal({
+		title: 'login invaild',
+		content: "login please",
+		showCancel: false,
+		complete: function() {
+		  uni.reLaunch({
+				url:"/pages/mine/login/login"
+		  });
+		}
 	})
 }
 function vaildTokenExpired(response) {
