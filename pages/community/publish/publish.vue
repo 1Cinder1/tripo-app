@@ -81,6 +81,9 @@
 			},
 			chooseLocation() {
 				let that = this
+				// uni.navigateTo({
+				// 	url:"../chooseLocation/chooseLocation"
+				// })
 				uni.chooseLocation({
 					success(res) {
 						console.log(res)
