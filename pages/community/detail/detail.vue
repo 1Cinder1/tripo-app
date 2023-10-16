@@ -20,7 +20,7 @@
 				<view style="margin-top: 20rpx;">
 					<image src="../../../static/community/location.png" style="width: 26rpx;vertical-align: middle;"
 						mode="widthFix"></image>
-					<text style="margin-left: 10rpx;">{{detail.location}}</text>
+					<text style="margin-left: 10rpx;">{{detail.location.split(" ")[0]}}</text>
 				</view>
 			</view>
 			<view style="display: flex;flex-direction: row;margin-left: 140rpx;">
@@ -100,6 +100,7 @@
 		margin-left: 31rpx;
 		margin-top: 36rpx;
 		border-radius: 40rpx;
+		margin-bottom: 20rpx;
 	}
 
 	.dis-text {

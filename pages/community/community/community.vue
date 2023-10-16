@@ -15,8 +15,8 @@
 			<view style="margin-left: 20rpx;">
 				<view style="font-weight: 600;font-size: 28rpx;">{{item.title}}</view>
 				<view style="margin-top: 14rpx;">
-					<image src="../../../static/community/location.png" style="width: 24rpx;height: 28rpx;" ></image>
-						<text style="margin-left: 16rpx;color: #636363;font-size: 24rpx;">{{item.location}}</text>
+					<image src="../../../static/community/location.png" style="width: 24rpx;height: 28rpx;position: absolute;" ></image>
+						<text class="place" >{{item.location.split(" ")[0]}}</text>
 				</view>
 				<view style="margin-top: 14rpx; color: #636363;font-size: 24rpx;">{{item.time.split('T')[0]}}</view>
 				<view style="margin-top: 14rpx;">
@@ -145,5 +145,15 @@
 		align-items: center;
 		padding: 6rpx;
 		height: 266rpx;
+	}
+	.place {
+		margin-left: 32rpx;
+		color: #636363;
+		font-size: 24rpx;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		width: 210rpx;
 	}
 </style>

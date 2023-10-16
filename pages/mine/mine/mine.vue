@@ -22,9 +22,11 @@
 		</view>
 		<view v-else class="avatar">
 			<view>
-				<image src="../../../static/mine/default.jpg" style="width: 200rpx;border-radius: 50%;height: 200rpx;margin-left: 40rpx;" @click="gotoLogin"></image>
+				<image src="../../../static/mine/default.jpg"
+					style="width: 200rpx;border-radius: 50%;height: 200rpx;margin-left: 40rpx;" @click="gotoLogin">
+				</image>
 				<view style="font-size: 48rpx;font-weight: 600;margin-top: 48rpx;">
-						login please
+					login please
 				</view>
 			</view>
 		</view>
@@ -48,9 +50,10 @@
 					<view style="margin-left: 20rpx;width: 250rpx;">
 						<view style="font-weight: 600;font-size: 36rpx;">{{item.title}}</view>
 						<view style="margin-top: 14rpx;">
-							<image src="../../../static/community/location.png" style="width: 24rpx;height: 28rpx;">
+							<image src="../../../static/community/location.png"
+								style="width: 24rpx;height: 28rpx;position: absolute;">
 							</image>
-							<text style="margin-left: 16rpx;color: #636363;font-size: 24rpx;">{{item.location}}</text>
+							<text class="place">{{item.location.split(" ")[0]}}</text>
 						</view>
 						<view style="margin-top: 14rpx; color: #636363;font-size: 24rpx;">{{item.time.split('T')[0]}}
 						</view>
@@ -85,14 +88,13 @@
 				hasMore: true
 			}
 		},
-		async onLoad() {
+		onLoad() {
 			this.userInfo = uni.getStorageSync("userInfo")
 		},
-		async onShow() {
-			await this.getPostList()
+		onShow() {
+			this.getPostList()
 		},
 		onPullDownRefresh() {
-			this.post = []
 			this.down = 10
 			this.userInfo = {}
 			this.getPostList()
@@ -100,6 +102,7 @@
 			setTimeout(function() {
 				uni.stopPullDownRefresh(); //停止下拉刷新动画
 			}, 500);
+			this.$forceUpdate()
 		},
 		onReachBottom() {
 			if (this.hasMore) {
@@ -122,70 +125,71 @@
 				})
 			},
 			gotoLogin() {
-				if(Object.keys(this.userInfo).length == 0) {
+				if (Object.keys(this.userInfo).length == 0) {
 					uni.navigateTo({
-						url:"../login/login"
+						url: "../login/login"
 					})
 				}
 			},
-			deletePost(item) {
-				let that = this
-				api.deletePost(item.post_id).then(res => {
-					if (res.statusCode == '200') {
-						uni.showToast({
-							icon: "success",
-							title: "delete success"
-						})
-					} else {
-						uni.showToast({
-							icon: "error",
-							title: "delete error"
-						})
-					}
-					that.getPostList()
-				})
+			async deletePost(item) {
+				let res = await api.deletePost(item.post_id)
+				if (res.statusCode == '200') {
+					uni.showToast({
+						icon: "success",
+						title: "delete success"
+					})
+				} else {
+					uni.showToast({
+						icon: "error",
+						title: "delete error"
+					})
+				}
+				this.getPostList()
 			},
 			chooseImage() {
 				let that = this
 				uni.chooseImage({
 					count: 1,
-					sizeType: ['compressed'],
+					// sizeType: ['compressed'],
 					sourceType: ['album'],
+					crop:{
+						width:100,
+						height:100
+					},
 					success: (res) => {
-						console.log(res)
-						api.uploadAvatar(res.tempFilePaths[0]).then(response => {
-							uni.showToast({
-								icon: "none",
-								title: "upload avatar success"
-							})
-							that.getBasicInfo()
-						})
+						that.uploadAvatar(res.tempFilePaths[0])
 					}
 				})
 			},
-			getPostList() {
-				let that = this
-				api.getPostList(this.userInfo.uid, this.up, this.down).then(res => {
-					if (res.statusCode == '200') {
-						if (res.data.posts.length <= that.post.length) {
-							that.hasMore = false
-						}
-						that.post = res.data.posts
-
-					}
+			async uploadAvatar(tempFilePath) {
+				let res = await api.uploadAvatar(tempFilePath)
+				uni.showToast({
+					icon: "none",
+					title: "upload avatar success"
 				})
+				this.getBasicInfo()
+			},
+			async getPostList() {
+				let that = this
+				if (Object.keys(this.userInfo).length == 0) {
+					return
+				}
+				let res = await api.getPostList(this.userInfo.uid, this.up, this.down)
+				if (res.statusCode == '200') {
+					if (res.data.posts.length <= this.post.length) {
+						this.hasMore = false
+					}
+					this.post = res.data.posts
+				}
 			},
 			async getBasicInfo() {
-				let that = this
-				api.getUserInfo(null, true).then(res => {
-					res.data.avatar = request.BASE_URL + res.data.avatar
-					console.log(res.data)
-					uni.setStorage({
-						key: "userInfo",
-						data: res.data,
-					})
-					that.userInfo = res.data
+				let res = await api.getUserInfo(null, true)
+				res.data.avatar = request.BASE_URL + res.data.avatar
+				uni.setStorage({
+					key: "userInfo",
+					data: res.data,
 				})
+				this.userInfo = res.data
 				this.$forceUpdate()
 			},
 			gotoCreate() {
@@ -206,10 +210,15 @@
 			close() {
 				this.$refs.popup.close()
 			},
-			confirm(value) {
-				api.setUserInfo(value).then(res => {
-					console.log(res)
-				})
+			async confirm(value) {
+				if(value.length > 12) {
+					uni.showToast({
+						icon:"none",
+						title:"username does not allow more than 12 strings"
+					})
+					return
+				}
+				let res = await api.setUserInfo(value)
 				this.getBasicInfo()
 				this.$refs.popup.close()
 			}
@@ -220,6 +229,7 @@
 <style>
 	page {
 		background-color: #F7F7F7;
+		width: 750rpx;
 	}
 
 	.main {
@@ -252,5 +262,16 @@
 		justify-content: center;
 		align-items: center;
 		margin-top: 80rpx;
+	}
+
+	.place {
+		margin-left: 32rpx;
+		color: #636363;
+		font-size: 24rpx;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		overflow: hidden;
+		width: 210rpx;
 	}
 </style>

@@ -6,7 +6,7 @@
 			</view>
 		</view>
 		<view>
-			<scroll-view scroll-x="true" @scroll="scroll" class="scroll">
+			<scroll-view scroll-x="true" class="scroll">
 				<view v-for="(item,index) in images" class="scroll-item" @click="previewImage(index)">
 					<image :src="item" class="scroll-item-image" style="width: 346rpx;height: 404rpx;"></image>
 				</view>
@@ -20,9 +20,9 @@
 				</view>
 			</scroll-view>
 		</view>
-		<view style="font-size: 32rpx;font-weight: 600;">
+		<view style="font-size: 32rpx;font-weight: 600;position: relative;">
 			<view style="margin-top: 5rpx;margin-left: 50rpx;display: inline-block;">Arriving Date To</view>
-			<input v-model="placeName" class="place-name"/>
+			<input v-model="placeName" class="place-name" @click="chooseLocation"/>
 		</view>
 		<picker class="date" mode="date" :value="date" :start="startDate" :end="endDate" @change="bindDateChange">
 			<view>{{date}}</view>
@@ -38,7 +38,7 @@
 			<input placeholder="RedFish Lake(title)" v-model="title"
 				style="border-bottom: #1E1E1E solid 2rpx;width: 400rpx;margin-left: 50rpx;" />
 		</view>
-		<textarea maxlength="-1" class="content" :value="content">
+		<textarea maxlength="-1" class="content" v-model="content">
 		</textarea>
 		<view class="post" @click="post">Post</view>
 		<view style="height: 60rpx;"></view>
@@ -60,7 +60,9 @@
 				title:"",
 				placeName:"",
 				userInfo:{},
-				images:[]
+				images:[],
+				longitude:"",
+				latitude:""
 			}
 		},
 		computed: {
@@ -77,8 +79,16 @@
 					delta: 1
 				})
 			},
-			scroll() {
-
+			chooseLocation() {
+				let that = this
+				uni.chooseLocation({
+					success(res) {
+						console.log(res)
+						that.placeName = res.address
+						that.longitude = res.longitude
+						that.latitude = res.latitude
+					}
+				})
 			},
 			previewImage(index) {
 				let that = this
@@ -91,12 +101,16 @@
 			addImage() {
 				let that = this
 				uni.chooseImage({
-					count:9,
-					sizeType:['compressed'],
+					count:1,
+					// sizeType:['compressed'],
 					sourceType:['album'],
+					crop:{
+						width:344,
+						height:370
+					},
 					success: (res) => {
 						console.log(res)
-						this.images = res.tempFilePaths
+						this.images.push(...res.tempFilePaths)
 					}
 				})
 			},
@@ -119,10 +133,18 @@
 
 			},
 			post() {
+				if(this.title == "" || this.content == "" || this.placeName == "") {
+					uni.showToast({
+						icon:"none",
+						title:"title content placeName is not allowed to be empty"
+					})
+					return
+				}
 				this.userInfo = uni.getStorageSync("userInfo")
 				console.log(this.images)
 				let that = this
-				api.pushPostInfo(this.title,this.content,this.placeName).then(res=>{
+				let place = this.placeName+" "+this.longitude+" "+this.latitude
+				api.pushPostInfo(this.title,this.content,place).then(res=>{
 					console.log(res)
 					
 					if(res.statusCode == '200') {
@@ -220,7 +242,7 @@
 		margin-left: 4rpx;
 		position: absolute;
 		left: 300rpx;
-		top: 660rpx;
+		top: 0rpx;
 		width: 300rpx;
 	}
 </style>

@@ -58,6 +58,7 @@ function tokenRequestByDelete(path,data = {}) {
 				"AUTHORIZATION": 'Bearer ' + token
 			},
 			success(response) {
+				console.log(response)
 				let res = {}
 				res.data = response.data
 				res.statusCode = response.statusCode
