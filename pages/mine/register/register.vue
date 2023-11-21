@@ -226,6 +226,5 @@
 		font-size: 24rpx;
 		font-weight: 700;
 		line-height: 30rpx;
-
 	}
 </style>

@@ -2,7 +2,7 @@ const ALL_URL = {
 	'PRO':'http://tripo.ilnf.space:8090'
 };
 let BASE_URL=ALL_URL.PRO;
-function tokenRequestByGet(path,data = {}) {
+function tokenRequestByGet(path,data = {},timeout=6000) {
 	const token = uni.getStorageSync("access_token");
 	if(token == '' || token == null) {
 		logout()
@@ -13,6 +13,7 @@ function tokenRequestByGet(path,data = {}) {
 			url: BASE_URL + path,
 			method: 'GET',
 			data,
+			timeout:timeout,
 			header: {
 				"AUTHORIZATION": 'Bearer ' + token
 			},
@@ -92,7 +93,6 @@ function tokenRequestByPost(path,data = {},header={}) {
 		return
 	}
 	header.AUTHORIZATION = 'Bearer ' + token
-	console.log(token)
 	return new Promise((resolve, reject)=>{
 		uni.request({
 			url: BASE_URL + path,

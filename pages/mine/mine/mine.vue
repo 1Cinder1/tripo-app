@@ -30,6 +30,14 @@
 				</view>
 			</view>
 		</view>
+		<view style="display: flex;flex-direction: row;justify-content: center;">
+			<view class="generate" style="width: 360rpx;" @click="gotoSummary">
+				Generate Summary
+			</view>
+			<view class="generate" @click="gotoTimeLine">
+				See Timeline
+			</view>
+		</view>
 		<view style="margin-left: 36rpx;font-size: 60rpx;font-weight: 600;margin-top: 80rpx;">
 			My Blogs
 		</view>
@@ -89,7 +97,7 @@
 				hasMore: true
 			}
 		},
-		onLoad() {
+		onLoad(options) {
 			this.userInfo = uni.getStorageSync("userInfo")
 		},
 		onShow() {
@@ -125,10 +133,15 @@
 					delta: 1
 				})
 			},
-			gotoDetail(item){
+			gotoSummary() {
+				uni.navigateTo({
+					url:"../summary/summary"
+				})
+			},
+			gotoDetail(item) {
 				console.log(item)
 				uni.navigateTo({
-					url:`../../community/detail/detail?postId=${item.post_id}`
+					url: `../../community/detail/detail?postId=${item.post_id}`
 				})
 			},
 			gotoLogin() {
@@ -137,6 +150,11 @@
 						url: "../login/login"
 					})
 				}
+			},
+			gotoTimeLine() {
+				uni.navigateTo({
+					url:"../timeline/timeline"
+				})
 			},
 			async deletePost(item) {
 				let res = await api.deletePost(item.post_id)
@@ -159,9 +177,9 @@
 					count: 1,
 					// sizeType: ['compressed'],
 					sourceType: ['album'],
-					crop:{
-						width:100,
-						height:100
+					crop: {
+						width: 100,
+						height: 100
 					},
 					success: (res) => {
 						that.uploadAvatar(res.tempFilePaths[0])
@@ -221,20 +239,20 @@
 				uni.showModal({
 					content: "want to logout?",
 					success(res) {
-						if(res.confirm) {
+						if (res.confirm) {
 							uni.clearStorage()
 							uni.reLaunch({
-								url:"../login/login"
+								url: "../login/login"
 							})
 						}
 					}
 				})
 			},
 			async confirm(value) {
-				if(value.length > 12) {
+				if (value.length > 12) {
 					uni.showToast({
-						icon:"none",
-						title:"username does not allow more than 12 strings"
+						icon: "none",
+						title: "username does not allow more than 12 strings"
 					})
 					return
 				}
@@ -294,6 +312,7 @@
 		overflow: hidden;
 		width: 210rpx;
 	}
+
 	.logout {
 		display: flex;
 		align-items: center;
@@ -307,5 +326,21 @@
 		border-radius: 40rpx;
 		padding: 6rpx;
 		height: 80rpx;
+	}
+	.generate {
+		font-size: 32rpx;
+		font-weight: 600;
+		line-height: 44rpx;
+		width: 280rpx;
+		height: 128rpx;
+		border-radius: 40rpx;
+		margin-left: 20rpx;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		margin-top: 50rpx;
+		background-color: #1D7063;
+		color: #FFFFFF;
 	}
 </style>

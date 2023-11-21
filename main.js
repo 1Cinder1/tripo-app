@@ -1,5 +1,9 @@
 import App from './App'
 import $ from './find.js'
+import uView from 'uview-ui'
+Vue.use(uView)
+// 如此配置即可
+uni.$u.config.unit = 'rpx'
 
 // #ifndef VUE3
 import Vue from 'vue'

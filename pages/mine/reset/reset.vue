@@ -83,24 +83,6 @@
 						})
 					}
 				})
-				// api.register(this.email,this.verificationCode,this.username,this.password).then(res =>{
-				// 	console.log(res)
-				// 	if(res.statusCode == '200') {
-				// 		uni.showToast({
-				// 			icon:"success",
-				// 			title:"the emai has been registered successfully"
-				// 		})
-				// 		uni.navigateBack({
-				// 			delta: 1
-				// 		})
-				// 	}
-				// 	if(res.statusCode == '301') {
-				// 		uni.showToast({
-				// 			icon:"none",
-				// 			title:"the email had been registered"
-				// 		})
-				// 	}
-				// })
 			},
 			getCode() {
 				if (!this.getCodeFlag) {

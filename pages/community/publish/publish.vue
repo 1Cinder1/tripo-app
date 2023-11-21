@@ -40,6 +40,13 @@
 		</view>
 		<textarea maxlength="-1" class="content" v-model="content">
 		</textarea>
+		<scroll-view scroll-x="true" class="scroll-view">
+			<view v-for="(item,index) in topBarList" class="scroll-item-2" :id="'item'+index" :class="{active:item.select}"
+				 @click="toggleclass(index)">
+				<text>{{item.name}}</text>
+			</view>
+			<view class="scroll-item-2" style="background-color: #1D7063;color: #FFFFFF;" @click="generateTags"><text>generate tags</text></view>
+		</scroll-view>
 		<view class="post" @click="post">Post</view>
 		<view style="height: 60rpx;"></view>
 	</view>
@@ -62,7 +69,10 @@
 				userInfo:{},
 				images:[],
 				longitude:"",
-				latitude:""
+				latitude:"",
+				toview: "",
+				topBarList: [],
+				activeindex: 0
 			}
 		},
 		computed: {
@@ -74,9 +84,32 @@
 			}
 		},
 		methods: {
+			toggleclass(index) {
+				this.topBarList[index].select = !this.topBarList[index].select
+			},
 			back() {
 				uni.navigateBack({
 					delta: 1
+				})
+			},
+			async generateTags() {
+				let res = await api.generateTags(this.date+" "+this.time,this.title,this.content,this.placeName)
+				if(res.statusCode == '200') {
+					for(let i=0;i<res.data.length;i++) {
+						let temp ={}
+						temp.name = res.data[i]
+						temp.select = false
+						this.topBarList.push(temp)
+					}
+				}
+			},
+			deleteTag(index) {
+				let that = this
+				uni.showModal({
+					content:'confirm to delete tag'+this.topBarList[index],
+					success() {
+							that.topBarList.splice(index,1)
+					}
 				})
 			},
 			chooseLocation() {
@@ -144,12 +177,16 @@
 					return
 				}
 				this.userInfo = uni.getStorageSync("userInfo")
-				console.log(this.images)
 				let that = this
 				let place = this.placeName+" "+this.longitude+" "+this.latitude
-				api.pushPostInfo(this.title,this.content,place).then(res=>{
+				let temp=[]
+				for(let i=0;i<this.topBarList.length;i++) {
+					if(this.topBarList[i].select) {
+							temp.push(this.topBarList[i].name)
+					}
+				}
+				api.pushPostInfo(this.title,this.content,place,JSON.stringify(temp)).then(res=>{
 					console.log(res)
-					
 					if(res.statusCode == '200') {
 						uni.showToast({
 							icon:"success",
@@ -159,6 +196,7 @@
 						for(let i=0;i<that.images.length;i++) {
 								that.uploadImages(res.data.post_id,that.images[i])
 						}
+						uni.removeStorageSync('conclusion')
 					}
 				})
 			},
@@ -247,5 +285,25 @@
 		left: 300rpx;
 		top: 0rpx;
 		width: 300rpx;
+	}
+	.scroll-view {
+		height: 80rpx;
+		white-space: nowrap;
+		margin-left: 50rpx;
+		margin-top: 26rpx;
+		width: 86%;
+	}
+	
+	.scroll-item-2 {
+		display: inline-block;
+		padding: 0 30rpx;
+		border: 1px solid #000000;
+		border-radius: 26rpx;
+		margin-left: 20rpx;
+		line-height: 60rpx;
+	}
+	.active {
+		background-color: #1D7063;
+		color: #FFFFFF;
 	}
 </style>

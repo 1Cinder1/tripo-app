@@ -1,21 +1,22 @@
 {
 	"easycom": {
-			"autoscan": true,
-			"custom": {
-				// uni-ui 规则如下配置
-				"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
-			}
-		},
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-	{
-		"path": "pages/community/community/community",
-		"style": {
-			"navigationBarTitleText": "",
-			"enablePullDownRefresh": true,
-			"navigationStyle": "custom"
+		"autoscan": true,
+		"custom": {
+			// uni-ui 规则如下配置
+			"^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue",
+			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 		}
-	
 	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/community/community/community",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": true,
+				"navigationStyle": "custom"
+			}
+
+		},
 		{
 			"path": "pages/mine/login/login",
 			"style": {
@@ -23,16 +24,16 @@
 				"enablePullDownRefresh": false,
 				"navigationStyle": "custom"
 			}
-		
+
 		}, {
 			"path": "pages/mine/mine/mine",
 			"style": {
 				"navigationBarTitleText": "",
 				"enablePullDownRefresh": true,
 				"navigationStyle": "custom",
-				"app-plus":{
+				"app-plus": {
 					// 将回弹属性关掉
-					"bounce":"none"
+					"bounce": "none"
 				}
 			}
 
@@ -58,58 +59,94 @@
 				"navigationStyle": "custom"
 			}
 
+		}, {
+			"path": "pages/notice/notice/notice",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+
+		}, {
+			"path": "pages/community/publish/publish",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/mine/reset/reset",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/mine/other/other",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": true,
+				"navigationStyle": "custom"
+			}
+
+		},
+		{
+			"path": "pages/map/gaodeMap/gaodeMap",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+		}, {
+			"path": "pages/map/aiIntro/aiIntro",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+
+		}, {
+			"path": "pages/mine/summary/summary",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
+
 		}
 	    ,{
-            "path" : "pages/notice/notice/notice",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false,
-								"navigationStyle": "custom"
+            "path" : "pages/mine/timeline/timeline",
+            "style": {
+            	"navigationBarTitleText": "",
+            	"enablePullDownRefresh": false,
+            	"navigationStyle": "custom"
             }
             
-        }
-        ,{
-            "path" : "pages/community/publish/publish",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false,
-								"navigationStyle": "custom"
-            }
-        }
-        ,{
-            "path" : "pages/mine/reset/reset",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false,
-								"navigationStyle": "custom"
-            }
         }
     ],
 	"tabBar": {
 		"height": "70px",
 		"iconWidth": "22px",
 		"list": [{
-			"pagePath": "pages/community/community/community", // 页面路径，必须在 pages 中先定义
-			"iconPath": "static/community/home.png", // 图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px
-			"selectedIconPath": "static/community/home-active.png" // 选中时的图片路径
-		}, {
-			"pagePath": "pages/map/map/map",
-			"iconPath": "static/map/map.png",
-			"selectedIconPath": "static/map/map-active.png"
-		},
-		{
-			"pagePath": "pages/notice/notice/notice",
-			"iconPath": "static/notice/notice.png",
-			"selectedIconPath": "static/notice/notice-active.png"
-		},
-		{
-			"pagePath": "pages/mine/mine/mine",
-			"iconPath": "static/mine/mine.png",
-			"selectedIconPath": "static/mine/mine-active.png"
-		}
+				"pagePath": "pages/community/community/community", // 页面路径，必须在 pages 中先定义
+				"iconPath": "static/community/home.png", // 图片路径，icon 大小限制为40kb，建议尺寸为 81px * 81px
+				"selectedIconPath": "static/community/home-active.png" // 选中时的图片路径
+			}, {
+				// "pagePath": "pages/map/map/map",
+				"pagePath": "pages/map/gaodeMap/gaodeMap",
+				"iconPath": "static/map/map.png",
+				"selectedIconPath": "static/map/map-active.png"
+			},
+			{
+				"pagePath": "pages/notice/notice/notice",
+				"iconPath": "static/notice/notice.png",
+				"selectedIconPath": "static/notice/notice-active.png"
+			},
+			{
+				"pagePath": "pages/mine/mine/mine",
+				"iconPath": "static/mine/mine.png",
+				"selectedIconPath": "static/mine/mine-active.png"
+			}
 		]
 	},
 	"globalStyle": {

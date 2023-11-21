@@ -4,21 +4,18 @@
 			<view style="font-size: 32rpx;font-weight: 700;">Notifications</view>
 		</view>
 		<view class="main">
-			<view class="main-title">Today</view>
-			<view class="main-card">
+			<!-- <view class="main-title">Today</view> -->
+			<view class="main-card" v-for="(item,index) in notice" @click="gotoDetail(item)">
 				<view class="main-avatar">
-					<image src="../../../static/community/avatar.jpg" mode="widthFix" style="width: 104rpx;"></image>
+					<image :src="baseUrl+item.image" mode="widthFix" style="width: 104rpx;"></image>
 				</view>
 				<view style="margin-left: 20rpx;">
-					<view style="font-size: 28rpx; margin-bottom: 10rpx;">Jessie Cooper</view>
+					<view style="font-size: 28rpx; margin-bottom: 10rpx;">{{item.content.split("just")[0]}}</view>
 					<view style="font-size: 20rpx;font-weight: 500;margin-bottom: 10rpx;">
 						<image src="../../../static/notice/plane.png" mode="widthFix" style="width: 20rpx;"></image>
-						Liked your post
+						{{item.content.split("just")[1]}}
 					</view>
-					<view style="font-size: 20rpx;font-weight: 500;color: #AFAFAF;">2023/9/22 09:32 AM</view>
-				</view>
-				<view class="main-right">
-					<image src="../../../static/community/avatar.jpg" mode="widthFix" style="width: 116rpx;"></image>
+					<view style="font-size: 20rpx;font-weight: 500;color: #AFAFAF;">{{item.time.split('T')[0]}} {{item.time.split('T')[1].split(".")[0]}}</view>
 				</view>
 			</view>
 		</view>
@@ -26,14 +23,36 @@
 </template>
 
 <script>
+	import api from '../../../api/api.js'
+	import request from "../../../utils/request/request.js"
 	export default {
 		data() {
 			return {
-
+				notice:[],
+				baseUrl:request.BASE_URL,
 			}
 		},
+		onLoad() {
+			
+		},
+		onShow() {
+			this.getNotice()
+		},
 		methods: {
-
+			async getNotice() {
+				let res = await api.getNotice()
+				console.log(res)
+				if(res.statusCode == '200') {
+					this.notice = res.data.content
+				}
+			},
+			gotoDetail(item) {
+				console.log(item)
+				
+				uni.navigateTo({
+					url:`../../community/detail/detail?postId=${item.post_id}`
+				})
+			}
 		}
 	}
 </script>

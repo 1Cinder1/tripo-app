@@ -26,12 +26,9 @@ function getUserInfo(uid,needToken) {
 		return request.requestByGet(`/get_user_info/?uid=${uid}`,{})
 	}
 }
-function modifyPostInfo(data={}) {
-	return request.tokenRequestByPost(`/set_post_info/`,data)
-}
-function pushPostInfo(title,content,location) {
+function pushPostInfo(title,content,location,tags) {
 	return request.tokenRequestByPost(`/publish/`,{
-		title,content,location
+		title,content,location,tags
 	},{
 		"Content-Type": 'application/x-www-form-urlencoded'
 	})
@@ -45,15 +42,6 @@ function getPostInfo(postId) {
 function deletePost(postId) {
 	return request.tokenRequestByDelete(`/delete_post/?post_id=${postId}`,{})
 }
-function getChatResponse(data={}) {
-	return request.tokenRequestByGet(`/get_chat_response/`,data)
-}
-function pushImg(data={}) {
-	return request.tokenRequestByPost(`/push_img/`,data)
-}
-function deleteImg(data={}) {
-	return request.tokenRequestByDelete(`/delete_img/`,data)
-}
 function setUserInfo(username) {
 	return request.tokenRequestByPost(`/set_user_info/`,{
 		username
@@ -62,14 +50,55 @@ function setUserInfo(username) {
 function uploadAvatar(tempFilePaths) {
 	return request.uploadFile(`/upload_avatar/`,tempFilePaths,'avatar')
 }
-function getPostList(uid,up,down) {
-	return request.requestByGet(`/post_list/?uid=${uid}&up=${up}&down=${down}`,{});
+function getPostList(uid,up,down,tag='') {
+	return request.requestByGet(`/post_list/?uid=${uid}&up=${up}&down=${down}&tag=${tag}`,{});
 }
 function reSet(email,code,password) {
 	return request.requestByPost(`/reset/`,{
 		email,code,password
 	})
 }
+function getNotice(){
+	return request.tokenRequestByGet(`/message/`,{})
+}
+function sendComment(post_id,content) {
+	return request.tokenRequestByPost(`/comment/`,{
+		post_id,content
+	})
+}
+function queryLike(post_id) {
+	return request.tokenRequestByGet(`/like/?post_id=${post_id}`,{})
+}
+
+function like(post_id) {
+	return request.tokenRequestByPost(`/like/`,{
+		post_id
+	})
+}
+function cancelLike(post_id) {
+	return request.tokenRequestByDelete(`/like/`,{
+		post_id
+	})
+}
+
+function getNearby(longitude,latitude) {
+	return request.requestByGet(`/nearby?longitude=${longitude}&latitude=${latitude}`,{})
+}
+
+function getAiChat(post_id) {
+	return request.tokenRequestByGet(`/get_chat_response/?post_id=${post_id}`,{},10000)
+}
+
+function conclusion() {
+	return request.tokenRequestByGet(`/AI_conclusion/`,{},60000)
+}
+function getTags() {
+	return request.requestByGet('/get_tags/',{})
+}
+function generateTags(time,title,content,location) {
+	return request.requestByGet(`/generate_tags/?time=${time}&title=${title}&content=${content}&location=${location}`,{})
+}
+
 
 export default {
 	getVerification,
@@ -77,16 +106,22 @@ export default {
 	getToken,
 	refreshToken,
 	getUserInfo,
-	modifyPostInfo,
 	pushPostInfo,
 	getPostInfo,
 	deletePost,
-	getChatResponse,
-	pushImg,
-	deleteImg,
 	setUserInfo,
 	uploadAvatar,
 	getPostList,
 	uploadPostImage,
-	reSet
+	reSet,
+	getNotice,
+	sendComment,
+	queryLike,
+	like,
+	cancelLike,
+	getNearby,
+	getAiChat,
+	conclusion,
+	getTags,
+	generateTags
 }
